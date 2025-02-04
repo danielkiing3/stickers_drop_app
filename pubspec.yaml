@@ -11,6 +11,11 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.8
 
+  # UTILITY
+  super_drag_and_drop: ^0.8.24
+  # UI
+  dotted_border: ^2.1.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
