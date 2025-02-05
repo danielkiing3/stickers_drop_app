@@ -60,29 +60,17 @@ class HomeScreen extends StatelessWidget {
                       color: Colors.black.withOpacity(0.2),
                       strokeWidth: 2,
                       child: Center(
-                        child: LayoutBuilder(builder: (context, constraints) {
-                          return Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              ShaderMask(
-                                shaderCallback: (Rect bounds) {
-                                  return const LinearGradient(
-                                    colors: [Colors.white, Colors.white],
-                                  ).createShader(bounds);
-                                },
-                                blendMode: BlendMode.srcATop,
-                                child: Image.asset(
-                                  ImageSource.asset[index],
+                        child: index != 0
+                            ? Image.asset(
+                                ImageSource.asset[index - 1],
+                              )
+                            : const Text(
+                                'DRAG AMD DROP YOUR STICKER',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Colors.grey,
                                 ),
                               ),
-                              Image.asset(
-                                ImageSource.asset[index],
-                                height: constraints.maxHeight - (5 * 2),
-                                width: constraints.maxWidth - (5 * 2),
-                              ),
-                            ],
-                          );
-                        }),
                       ),
                     );
                   },
