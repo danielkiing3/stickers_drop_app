@@ -13,6 +13,7 @@ dependencies:
 
   # UTILITY
   super_drag_and_drop: ^0.8.24
+  cached_memory_image: ^1.5.0
   # UI
   dotted_border: ^2.1.0
 
