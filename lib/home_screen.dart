@@ -1,6 +1,9 @@
+import 'dart:ui';
+
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:stickers_drop_app/image_source.dart';
+import 'package:stickers_drop_app/widgets/image_with_border_and_shadow.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -61,8 +64,11 @@ class HomeScreen extends StatelessWidget {
                       strokeWidth: 2,
                       child: Center(
                         child: index != 0
-                            ? Image.asset(
-                                ImageSource.asset[index - 1],
+                            ? Transform.scale(
+                                scale: 0.8,
+                                child: ImageWithBorderAndShadow(
+                                  image: ImageSource.asset[index - 1],
+                                ),
                               )
                             : const Text(
                                 'DRAG AMD DROP YOUR STICKER',
