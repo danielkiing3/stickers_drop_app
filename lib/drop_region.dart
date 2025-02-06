@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:super_drag_and_drop/super_drag_and_drop.dart';
 
@@ -7,11 +9,13 @@ class CustomDropRegion extends StatefulWidget {
     required this.child,
     required this.onDropEnter,
     required this.onDropLeave,
+    required this.onStoreImage,
   });
 
   final Widget child;
   final VoidCallback onDropEnter;
   final VoidCallback onDropLeave;
+  final void Function(Uint8List) onStoreImage;
 
   @override
   State<CustomDropRegion> createState() => _CustomDropRegionState();
@@ -40,9 +44,8 @@ class _CustomDropRegionState extends State<CustomDropRegion> {
           reader.getFile(
             Formats.png,
             (file) async {
-              final data = await file.readAll();
-
-              //TODO: Store the data somewhere
+              final Uint8List data = await file.readAll();
+              widget.onStoreImage(data);
             },
             onError: (error) {
               print('Error reading value $error');
