@@ -1,12 +1,30 @@
-import 'dart:ui';
-
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
+import 'package:stickers_drop_app/drop_region.dart';
 import 'package:stickers_drop_app/image_source.dart';
 import 'package:stickers_drop_app/widgets/image_with_border_and_shadow.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  int? hoverIndex;
+
+  void updateHoverIndex(int index) {
+    setState(() {
+      hoverIndex = index;
+    });
+  }
+
+  void resetHoverIndex() {
+    setState(() {
+      hoverIndex = null;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,27 +74,33 @@ class HomeScreen extends StatelessWidget {
                   shrinkWrap: true,
                   itemCount: 9,
                   itemBuilder: (context, index) {
-                    return DottedBorder(
-                      borderType: BorderType.RRect,
-                      radius: const Radius.circular(12),
-                      dashPattern: const [10, 10],
-                      color: Colors.black.withOpacity(0.2),
-                      strokeWidth: 2,
-                      child: Center(
-                        child: index != 0
-                            ? Transform.scale(
-                                scale: 0.8,
-                                child: ImageWithBorderAndShadow(
-                                  image: ImageSource.asset[index - 1],
+                    return CustomDropRegion(
+                      onDropEnter: () => updateHoverIndex(index),
+                      onDropLeave: resetHoverIndex,
+                      child: DottedBorder(
+                        borderType: BorderType.RRect,
+                        radius: const Radius.circular(12),
+                        dashPattern: const [10, 10],
+                        color: hoverIndex == index
+                            ? Colors.blue
+                            : Colors.black.withOpacity(0.2),
+                        strokeWidth: 2,
+                        child: Center(
+                          child: index != 0
+                              ? Transform.scale(
+                                  scale: 0.8,
+                                  child: ImageWithBorderAndShadow(
+                                    image: ImageSource.asset[index - 1],
+                                  ),
+                                )
+                              : const Text(
+                                  'DRAG AMD DROP YOUR STICKER',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: Colors.grey,
+                                  ),
                                 ),
-                              )
-                            : const Text(
-                                'DRAG AMD DROP YOUR STICKER',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: Colors.grey,
-                                ),
-                              ),
+                        ),
                       ),
                     );
                   },
