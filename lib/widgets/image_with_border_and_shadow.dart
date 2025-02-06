@@ -11,8 +11,10 @@ class ImageWithBorderAndShadow extends StatelessWidget {
     this.shadowColor = Colors.black,
     this.borderWidth = 5.0,
     this.shadowRadius = 15.0,
-  }) : assert(image != null || imageProvider != null,
-            'Either image or imageProvider must be provided');
+  }) : assert(
+          image != null || imageProvider != null,
+          'Either image or imageProvider must be provided',
+        );
 
   final String? image;
   final ImageProvider? imageProvider;
@@ -23,10 +25,10 @@ class ImageWithBorderAndShadow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ImageProvider effectiveImageProvider =
+    final ImageProvider actualImageProvider =
         imageProvider ?? AssetImage(image!);
 
-    Widget child = Image(image: effectiveImageProvider);
+    Widget child = Image(image: actualImageProvider);
 
     return Stack(
       children: [
@@ -47,7 +49,7 @@ class ImageWithBorderAndShadow extends StatelessWidget {
             radiusY: borderWidth,
           ),
           child: Image(
-            image: effectiveImageProvider,
+            image: actualImageProvider,
             color: borderColor,
           ),
         ),
