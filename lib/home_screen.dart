@@ -1,7 +1,11 @@
+import 'dart:typed_data';
+
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:stickers_drop_app/drop_region.dart';
 import 'package:stickers_drop_app/image_source.dart';
+import 'package:stickers_drop_app/swipe_screen.dart';
+import 'package:stickers_drop_app/utils/cached_image_provider.dart';
 import 'package:stickers_drop_app/widgets/image_with_border_and_shadow.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -13,6 +17,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int? hoverIndex;
+  CacheMemoryImageProvider? dropImage;
 
   void updateHoverIndex(int index) {
     setState(() {
@@ -24,6 +29,16 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       hoverIndex = null;
     });
+  }
+
+  void storeImage(Uint8List file) {
+    final value = CacheMemoryImageProvider(
+      'app://dropImage${DateTime.now()}',
+      file,
+    );
+
+    dropImage = value;
+    setState(() {});
   }
 
   @override
@@ -77,6 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     return CustomDropRegion(
                       onDropEnter: () => updateHoverIndex(index),
                       onDropLeave: resetHoverIndex,
+                      onStoreImage: storeImage,
                       child: DottedBorder(
                         borderType: BorderType.RRect,
                         radius: const Radius.circular(12),
@@ -93,13 +109,34 @@ class _HomeScreenState extends State<HomeScreen> {
                                     image: ImageSource.asset[index - 1],
                                   ),
                                 )
-                              : const Text(
-                                  'DRAG AMD DROP YOUR STICKER',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: Colors.grey,
-                                  ),
-                                ),
+                              : dropImage != null
+                                  ? GestureDetector(
+                                      onTap: dropImage != null
+                                          ? () {
+                                              Navigator.of(context)
+                                                  .push(MaterialPageRoute(
+                                                builder: (context) {
+                                                  return SwipeScreen(
+                                                    topImage: dropImage!,
+                                                  );
+                                                },
+                                              ));
+                                            }
+                                          : null,
+                                      child: Transform.scale(
+                                        scale: 0.8,
+                                        child: ImageWithBorderAndShadow(
+                                          imageProvider: dropImage,
+                                        ),
+                                      ),
+                                    )
+                                  : const Text(
+                                      'DRAG AMD DROP YOUR STICKER',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: Colors.grey,
+                                      ),
+                                    ),
                         ),
                       ),
                     );
