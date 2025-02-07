@@ -4,9 +4,14 @@ import 'package:stickers_drop_app/data/image_source.dart';
 import 'package:stickers_drop_app/presentation/widgets/image_with_border_and_shadow.dart';
 
 class SwipeScreen extends StatefulWidget {
-  const SwipeScreen({super.key, required this.topImage});
+  const SwipeScreen({
+    super.key,
+    required this.topImage,
+    this.imageWidth = 200.0,
+  });
 
   final ImageProvider topImage;
+  final double imageWidth;
 
   @override
   State<SwipeScreen> createState() => _SwipeScreenState();
@@ -30,6 +35,9 @@ class _SwipeScreenState extends State<SwipeScreen> {
   }
 
   Duration get _duration => const Duration(milliseconds: 300);
+
+  double get _maxOffset =>
+      -(MediaQuery.sizeOf(context).width / 2 + (widget.imageWidth / 2));
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +69,7 @@ class _SwipeScreenState extends State<SwipeScreen> {
                             newIndex == selectedIndex ? 0 : 0.2;
 
                         final offset = isSelected
-                            ? const Offset(-350, 0)
+                            ? Offset(_maxOffset, 0)
                             : Offset(
                                 ((newIndex - selectedIndex) * 10),
                                 ((newIndex - selectedIndex) * -5),
@@ -73,8 +81,9 @@ class _SwipeScreenState extends State<SwipeScreen> {
                           scale: scale,
                           offset: offset,
                           rotation: rotation,
+                          maxOffset: _maxOffset,
                           child: SizedBox(
-                            width: 200,
+                            width: widget.imageWidth,
                             child: ImageWithBorderAndShadow(image: asset),
                           ),
                         );
@@ -84,7 +93,7 @@ class _SwipeScreenState extends State<SwipeScreen> {
                     valueListenable: _selectedIndex,
                     builder: (context, selectedIndex, _) {
                       final offset = selectedIndex > 0
-                          ? const Offset(-350, 0)
+                          ? Offset(_maxOffset, 0)
                           : const Offset(0, 0);
 
                       return AnimatedStickerTransform(
@@ -93,8 +102,9 @@ class _SwipeScreenState extends State<SwipeScreen> {
                         scale: 1,
                         rotation: 0,
                         offset: offset,
+                        maxOffset: _maxOffset,
                         child: SizedBox(
-                          width: 200,
+                          width: widget.imageWidth,
                           child: ImageWithBorderAndShadow(
                               imageProvider: widget.topImage),
                         ),
