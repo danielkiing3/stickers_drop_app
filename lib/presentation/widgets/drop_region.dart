@@ -1,5 +1,4 @@
-import 'dart:typed_data';
-
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:super_drag_and_drop/super_drag_and_drop.dart';
 
@@ -48,7 +47,9 @@ class _CustomDropRegionState extends State<CustomDropRegion> {
               widget.onStoreImage(data);
             },
             onError: (error) {
-              print('Error reading value $error');
+              if (kDebugMode) {
+                print('Error reading value $error');
+              }
             },
           );
         } else {}
