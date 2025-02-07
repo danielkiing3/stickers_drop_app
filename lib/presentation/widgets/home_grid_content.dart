@@ -76,15 +76,19 @@ class _HomeGridContentState extends State<HomeGridContent> {
                             return image != null
                                 ? GestureDetector(
                                     onTap: () {
-                                      Navigator.of(context)
-                                          .push(MaterialPageRoute(
-                                        builder: (context) => SwipeScreen(
-                                          topImage: image,
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (context) => SwipeScreen(
+                                            topImage: image,
+                                          ),
                                         ),
-                                      ));
+                                      );
                                     },
-                                    child: ImageWithBorderAndShadow(
-                                      imageProvider: image,
+                                    child: Transform.scale(
+                                      scale: 0.8,
+                                      child: ImageWithBorderAndShadow(
+                                        imageProvider: image,
+                                      ),
                                     ),
                                   )
                                 : const Text(
