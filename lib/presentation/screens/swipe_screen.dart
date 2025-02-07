@@ -13,9 +13,23 @@ class SwipeScreen extends StatefulWidget {
 }
 
 class _SwipeScreenState extends State<SwipeScreen> {
-  int selectedIndex = 0;
-  double dragOffset = 0.0;
-  double totalDrag = 0.0;
+  final ValueNotifier<int> _selectedIndex = ValueNotifier<int>(0);
+
+  void _onHorizontalDragEnd(details) {
+    double velocity = details.primaryVelocity ?? 0.0;
+
+    if (velocity > 300) {
+      if (_selectedIndex.value > 0) {
+        _selectedIndex.value--;
+      }
+    } else if (velocity < -300) {
+      if (_selectedIndex.value < ImageSource.asset.length) {
+        _selectedIndex.value++;
+      }
+    }
+  }
+
+  Duration get _duration => const Duration(milliseconds: 300);
 
   @override
   Widget build(BuildContext context) {
@@ -27,68 +41,54 @@ class _SwipeScreenState extends State<SwipeScreen> {
           children: [
             const Spacer(),
             GestureDetector(
-              onHorizontalDragStart: (_) {
-                totalDrag = 0.0;
-              },
-              onHorizontalDragUpdate: (details) {
-                totalDrag += details.delta.dx;
-              },
-              onHorizontalDragEnd: (_) {
-                if (totalDrag > 30) {
-                  if (selectedIndex > 0) {
-                    selectedIndex--;
-                  }
-                } else if (totalDrag < -30) {
-                  if (selectedIndex < ImageSource.asset.length) {
-                    selectedIndex++;
-                  }
-                }
-
-                setState(() {});
-              },
+              onHorizontalDragEnd: _onHorizontalDragEnd,
               child: Stack(
                 alignment: Alignment.center,
                 children: [
                   for (final (index, asset)
                       in ImageSource.asset.reversed.indexed)
-                    Builder(builder: (context) {
-                      final newIndex = ImageSource.asset.length - index;
-                      final isSelected = newIndex < selectedIndex;
+                    ValueListenableBuilder<int>(
+                      valueListenable: _selectedIndex,
+                      builder: (context, selectedIndex, _) {
+                        final newIndex = ImageSource.asset.length - index;
+                        final isSelected = newIndex < selectedIndex;
 
-                      final double scale = isSelected
-                          ? 1
-                          : 1 - ((newIndex - selectedIndex) * 0.02);
+                        final double scale = isSelected
+                            ? 1
+                            : 1 - ((newIndex - selectedIndex) * 0.02);
 
-                      final double rotation =
-                          newIndex == selectedIndex ? 0 : 0.2;
+                        final double rotation =
+                            newIndex == selectedIndex ? 0 : 0.2;
 
-                      final offset = isSelected
-                          ? const Offset(-350, 0)
-                          : Offset(
-                              ((newIndex - selectedIndex) * 10),
-                              ((newIndex - selectedIndex) * -5),
-                            );
+                        final offset = isSelected
+                            ? const Offset(-350, 0)
+                            : Offset(
+                                ((newIndex - selectedIndex) * 10),
+                                ((newIndex - selectedIndex) * -5),
+                              );
 
-                      return AnimatedStickerTransform(
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.easeInOut,
-                        scale: scale,
-                        offset: offset,
-                        rotation: rotation,
-                        child: SizedBox(
-                          width: 200,
-                          child: ImageWithBorderAndShadow(image: asset),
-                        ),
-                      );
-                    }),
-                  Builder(
-                    builder: (context) {
+                        return AnimatedStickerTransform(
+                          duration: _duration,
+                          curve: Curves.easeInOut,
+                          scale: scale,
+                          offset: offset,
+                          rotation: rotation,
+                          child: SizedBox(
+                            width: 200,
+                            child: ImageWithBorderAndShadow(image: asset),
+                          ),
+                        );
+                      },
+                    ),
+                  ValueListenableBuilder<int>(
+                    valueListenable: _selectedIndex,
+                    builder: (context, selectedIndex, _) {
                       final offset = selectedIndex > 0
                           ? const Offset(-350, 0)
                           : const Offset(0, 0);
 
                       return AnimatedStickerTransform(
-                        duration: const Duration(milliseconds: 300),
+                        duration: _duration,
                         curve: Curves.easeInOut,
                         scale: 1,
                         rotation: 0,
