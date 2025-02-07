@@ -9,12 +9,14 @@ class AnimatedStickerTransform extends ImplicitlyAnimatedWidget {
     required this.offset,
     required this.rotation,
     required this.child,
+    required this.maxOffset,
   });
 
   final double scale;
   final Offset offset;
   final double rotation;
   final Widget child;
+  final double maxOffset;
 
   @override
   ImplicitlyAnimatedWidgetState<AnimatedStickerTransform> createState() =>
@@ -31,6 +33,8 @@ class _AnimatedStickerTransformState
 
   Tween<double>? _rotation;
   late Animation<double> _rotationAnimation;
+
+  final ValueNotifier<bool> _isOffScreen = ValueNotifier<bool>(false);
 
   @override
   void forEachTween(TweenVisitor<dynamic> visitor) {
@@ -54,23 +58,55 @@ class _AnimatedStickerTransformState
   }
 
   @override
+  void initState() {
+    super.initState();
+
+    _offsetAnimation.addStatusListener((status) {
+      final dx = _offsetAnimation.value.dx;
+      final maxOffset = widget.maxOffset;
+
+      if (status.isCompleted && dx < (maxOffset + 10)) {
+        _isOffScreen.value = true;
+      } else if (status.isAnimating &&
+          dx > (maxOffset - 50) &&
+          dx < (maxOffset + 50)) {
+        _isOffScreen.value = false;
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _isOffScreen.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: animation,
-      builder: (context, child) {
-        return Transform.translate(
-          offset: _offsetAnimation.value,
-          child: Transform.rotate(
-            angle: _rotationAnimation.value,
-            child: Transform.scale(
-              scaleX: _scaleAnimation.value,
-              scaleY: _scaleAnimation.value,
-              child: child,
-            ),
+    return ValueListenableBuilder<bool>(
+      valueListenable: _isOffScreen,
+      builder: (context, isOffscreen, child) {
+        return Visibility(
+          visible: !isOffscreen,
+          child: AnimatedBuilder(
+            animation: animation,
+            builder: (context, child) {
+              return Transform.translate(
+                offset: _offsetAnimation.value,
+                child: Transform.rotate(
+                  angle: _rotationAnimation.value,
+                  child: Transform.scale(
+                    scaleX: _scaleAnimation.value,
+                    scaleY: _scaleAnimation.value,
+                    child: child,
+                  ),
+                ),
+              );
+            },
+            child: widget.child,
           ),
         );
       },
-      child: widget.child,
     );
   }
 }
