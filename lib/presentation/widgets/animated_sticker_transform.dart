@@ -65,9 +65,13 @@ class _AnimatedStickerTransformState
       final dx = _offsetAnimation.value.dx;
       final maxOffset = widget.maxOffset;
 
+      //TODO: Performance improvement
+      //TODO: Prevent unnecessary updating _isOffsScreen value if true
       if (status.isCompleted && dx < (maxOffset + 10)) {
         _isOffScreen.value = true;
-      } else if (status.isAnimating &&
+      }
+      //TODO: Prevent unnecessary updating _isOffsScreen value if false
+      else if (status.isAnimating &&
           dx > (maxOffset - 50) &&
           dx < (maxOffset + 50)) {
         _isOffScreen.value = false;
