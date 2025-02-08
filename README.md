@@ -2,10 +2,11 @@
 
 
 ## Video Demo
-
+https://github.com/user-attachments/assets/33a277eb-4488-482e-bb51-9ae8fbc56615
 
 
 ## Installation
+
 To run this app locally, follow these steps:
 
 1. Clone the repo locally
